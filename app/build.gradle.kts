@@ -7,6 +7,10 @@ android {
     namespace = "com.example.navigo"
     compileSdk = 34
 
+    packaging {
+        jniLibs.pickFirsts.add("lib/**/libc++_shared.so")
+    }
+
     defaultConfig {
         applicationId = "com.example.navigo"
         minSdk = 24
@@ -59,6 +63,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -66,4 +73,17 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    //Neshan sdk library
+    implementation ("neshan-android-sdk:mobile-sdk:1.0.3")
+    implementation ("neshan-android-sdk:services-sdk:1.0.0")
+    implementation("neshan-android-sdk:common-sdk:0.0.3")
+
+    //Play Services
+    implementation ("com.google.android.gms:play-services-gcm:17.0.0")
+    implementation ("com.google.android.gms:play-services-location:21.0.1")
+    implementation ("androidx.appcompat:appcompat:1.6.1")
+    implementation ("androidx.constraintlayout:constraintlayout:2.1.4")
+
+
 }
