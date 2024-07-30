@@ -1,4 +1,4 @@
-package com.example.navigo.ui.theme
+package com.example.navigo.theme
 
 import androidx.compose.ui.graphics.Color
 

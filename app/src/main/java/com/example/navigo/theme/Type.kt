@@ -1,4 +1,4 @@
-package com.example.navigo.ui.theme
+package com.example.navigo.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,6 +1,5 @@
-package com.example.navigo.ui.theme
+package com.example.navigo.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
