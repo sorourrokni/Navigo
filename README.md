@@ -10,8 +10,6 @@ Navigo is a modern GPS navigation app designed to help you find the best routes,
 - **Search and Navigate:** Quickly find destinations and start navigating with ease.
 - **Community Reporting:** Report and view incidents such as accidents and road closures.
 - **Offline Maps:** Download maps for offline use to navigate without an internet connection.
-- **User Accounts:** Save favorite routes and destinations for quick access.
-- **Customization:** Personalize your experience with map themes and measurement units.
 
 ## Installation
 
