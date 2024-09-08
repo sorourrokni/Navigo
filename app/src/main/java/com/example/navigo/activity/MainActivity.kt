@@ -19,7 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.navigo.component.Map
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.navigo.navigation.NavigationGraph
 import com.example.navigo.theme.NavigoTheme
 import com.example.navigo.viewModel.LocationViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -36,7 +38,11 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    RequestLocationPermission(locationViewModel = locationViewModel)
+                    val navController = rememberNavController()
+                    RequestLocationPermission(
+                        locationViewModel = locationViewModel,
+                        navController = navController,
+                    )
                 }
             }
         }
@@ -45,11 +51,18 @@ class MainActivity : ComponentActivity() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun RequestLocationPermission(locationViewModel: LocationViewModel) {
+fun RequestLocationPermission(
+    locationViewModel: LocationViewModel,
+    navController: NavHostController
+) {
     val locationPermissionState =
         rememberPermissionState(permission = Manifest.permission.ACCESS_FINE_LOCATION)
     if (locationPermissionState.status.isGranted) {
-        Map(locationViewModel)
+        NavigationGraph(
+            locationViewModel = locationViewModel,
+            navController = navController,
+            modifier = Modifier.fillMaxSize()
+        )
     } else {
         Column(
             modifier = Modifier

@@ -45,14 +45,14 @@ val Typography = Typography(
     titleLarge = TextStyle(
         fontFamily = YekanBakhFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 22.sp,
+        fontSize = 14.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
     titleMedium = TextStyle(
         fontFamily = YekanBakhFontFamily,
         fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
+        fontSize = 12.sp,
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),

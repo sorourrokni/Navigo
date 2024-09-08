@@ -1,9 +1,11 @@
 package com.example.navigo.viewModel
 
+import android.location.Location
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.navigo.data.model.common.Point
+import com.example.navigo.data.model.common.Step
 import com.example.navigo.data.repository.DirectionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -20,26 +22,84 @@ class DirectionViewModel(private val directionRepository: DirectionRepository) :
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> get() = _error
 
-    fun fetchRoute(origin: String, destination: String) {
+    private val _navigationInstructions = MutableStateFlow<List<String?>>(emptyList())
+    val navigationInstructions: StateFlow<List<String?>> get() = _navigationInstructions
+
+    private val _steps = MutableStateFlow<List<Step>>(emptyList())
+    val steps: StateFlow<List<Step>> get() = _steps
+
+    private val _destinations = MutableStateFlow<List<Point>>(emptyList())
+    val destinations: StateFlow<List<Point>> get() = _destinations
+
+    companion object {
+        const val THRESHOLD_DISTANCE = 50 // Threshold distance to detect approaching the next step
+    }
+
+    fun clearRoute() {
+        _routePolyline.value = emptyList()
+    }
+
+    fun fetchRouteWithTraffic(origin: String, destination: String) {
         viewModelScope.launch {
             directionRepository.getRouteWithTraffic(origin, destination) { directionResponse ->
                 directionResponse?.let {
-                    val polylinePoints =
-                        decodePolyline(directionResponse.routes[0].overviewPolyline.points)
-                    _routePolyline.value = polylinePoints
+                    val route = directionResponse.routes.firstOrNull()
+                    route?.let {
+                        _steps.value = route.legs.firstOrNull()?.steps ?: emptyList()
+                        _routePolyline.value = decodePolyline(route.overviewPolyline.points)
+                        processInstructions(_steps.value)
+                    }
                 }
             }
         }
     }
 
-    fun updateRoute(points: List<Point>) {
-        val waypoints = points.joinToString("|") { "${it.location[0]},${it.location[1]}" }
+    private fun processInstructions(steps: List<Step>) {
+        val instructions = steps.map { step ->
+            step.instruction
+        }
+        _navigationInstructions.value = instructions
+    }
+
+    fun updateNavigation(currentLocation: LatLng) {
+        _steps.value.forEach { step ->
+            val stepLocation = LatLng(step.startLocation[0], step.startLocation[1])
+            val distanceToStep = calculateDistance(currentLocation, stepLocation)
+
+            if (distanceToStep < THRESHOLD_DISTANCE) {
+                val updatedInstructions = _navigationInstructions.value.drop(1)
+                _navigationInstructions.value = updatedInstructions
+                showInstruction(updatedInstructions.firstOrNull())
+            }
+        }
+    }
+
+    fun showInstruction(instruction: String?) {
+        instruction?.let {
+            println("دستورالعمل بعدی: $instruction")
+        }
+    }
+
+    private fun calculateDistance(currentLocation: LatLng, stepLocation: LatLng): Float {
+        val results = FloatArray(1)
+        Location.distanceBetween(
+            currentLocation.latitude, currentLocation.longitude,
+            stepLocation.latitude, stepLocation.longitude, results
+        )
+        return results[0]
+    }
+
+    fun updateRoute() {
+        val waypoints =
+            _destinations.value.joinToString("|") { "${it.location[0]},${it.location[1]}" }
 
         viewModelScope.launch {
             directionRepository.getOptimalRoute(
                 waypoints,
                 onSuccess = { response ->
                     _routePoints.value = response.points
+                    _routePolyline.value =
+                        response.points.map { LatLng(it.location[0], it.location[1]) }
                 },
                 onFailure = { throwable ->
                     _error.value = throwable.message
@@ -47,6 +107,12 @@ class DirectionViewModel(private val directionRepository: DirectionRepository) :
             )
         }
     }
+
+    fun addDestination(point: Point) {
+        _destinations.value += point
+        updateRoute()
+    }
+
 
     private fun decodePolyline(encoded: String): List<LatLng> {
         val poly = ArrayList<LatLng>()

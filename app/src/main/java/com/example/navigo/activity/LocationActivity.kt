@@ -15,7 +15,7 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 
-class UserLocationActivity : ComponentActivity() {
+class LocationActivity : ComponentActivity() {
 
     var latitude by mutableDoubleStateOf(0.0)
     var longitude by mutableDoubleStateOf(0.0)
