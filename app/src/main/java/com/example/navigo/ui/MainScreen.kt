@@ -16,6 +16,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,7 +69,7 @@ fun MainScreen(
     val latitude by locationViewModel.latitude.collectAsState()
     val longitude by locationViewModel.longitude.collectAsState()
     val location = LatLng(latitude, longitude)
-
+    val destinations = remember { mutableStateListOf<LatLng?>() }
     var isMultiDestination by remember { mutableStateOf(false) }
     val addressDetails by addressViewModel.addressDetails
     val carDistanceDetails by distanceViewModel.carDistanceWithTraffic.collectAsState()
@@ -112,6 +113,7 @@ fun MainScreen(
                 distanceViewModel.fetchCarDistanceWithTraffic(userLocation, it)
                 distanceViewModel.fetchMotorcycleDistanceWithTraffic(userLocation, it)
             }
+            destinations.add(it)
             clickedLatLng = initialLatLng
             scope.launch {
                 if (!sheetState.isVisible) {
@@ -130,6 +132,7 @@ fun MainScreen(
                 navController.navigate(NavigationItem.Search.route)
             },
             onMapLongClick = { latLng ->
+                destinations.add(latLng)
                 clickedLatLng = latLng
                 userLatLng =
                     LatLng(locationViewModel.latitude.value, locationViewModel.longitude.value)
@@ -138,7 +141,6 @@ fun MainScreen(
                     distanceViewModel.fetchCarDistanceWithTraffic(userLocation, latLng)
                     distanceViewModel.fetchMotorcycleDistanceWithTraffic(userLocation, latLng)
                 }
-                showTopSheet = true
                 scope.launch {
                     sheetState.apply {
                         if (!isVisible) show() else hide()
@@ -178,7 +180,6 @@ fun MainScreen(
                     })
             }
         }
-
         AnimatedVisibility(
             visible = showTopSheet,
             enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
@@ -191,8 +192,9 @@ fun MainScreen(
                 address = addressDetails,
                 carDistanceDetails = carDistanceDetails,
                 motorcycleDistanceDetails = motorcycleDistanceDetails,
-                onMultiDestinationRouting = {}
+                navController = navController
             )
         }
     }
 }
+

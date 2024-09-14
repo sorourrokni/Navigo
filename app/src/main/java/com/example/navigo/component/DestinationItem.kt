@@ -16,10 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.example.navigo.data.model.common.Address
 
 @Composable
-fun DestinationItem(icon: Int, address: Address) {
+fun DestinationItem(icon: Int, address: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -36,19 +35,17 @@ fun DestinationItem(icon: Int, address: Address) {
                 .width(24.dp)
 
         )
-        address.address?.let {
-            OutlinedTextField(
-                modifier = Modifier
-                    .padding(start = 8.dp, end = 8.dp)
-                    .height(48.dp)
-                    .width(240.dp)
-                    .wrapContentWidth(),
-                value = it,
-                onValueChange = {},
-                singleLine = true,
-                readOnly = true,
-                textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.End)
-            )
-        }
+        OutlinedTextField(
+            modifier = Modifier
+                .padding(start = 8.dp, end = 8.dp)
+                .height(48.dp)
+                .width(240.dp)
+                .wrapContentWidth(),
+            value = address,
+            onValueChange = {},
+            singleLine = true,
+            readOnly = true,
+            textStyle = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.End)
+        )
     }
 }

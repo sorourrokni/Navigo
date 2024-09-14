@@ -13,12 +13,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -29,6 +26,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.example.navigo.R
 import com.example.navigo.data.model.common.Address
 
@@ -38,44 +36,13 @@ fun DynamicTopSheet(
     address: Address?,
     carDistanceDetails: Pair<String, String>?,
     motorcycleDistanceDetails: Pair<String, String>?,
-    onMultiDestinationRouting: () -> Unit
+    navController: NavHostController
+
 ) {
-    val currentAddress = Address(
-        status = "OK",
-        address = "لوکیشن فعلی", // "Current Location"
-        routeName = "Main Road",
-        routeType = "Street",
-        neighbourhood = "Downtown",
-        city = "Tehran",
-        state = "Tehran",
-        place = "Landmark X",
-        municipalityZone = "Zone 5",
-        inTrafficZone = true,
-        inOddEvenZone = false,
-        village = null,
-        county = "Tehran County",
-        district = "Central District"
-    )
 
-    var expanded by remember { mutableStateOf(false) }
     var isAddingDestination by remember { mutableStateOf(false) }
-    val destinations = remember { mutableStateListOf(currentAddress) }
-
-    if (!isAddingDestination) {
-        destinations.clear()
-        destinations.add(currentAddress)
-        address?.let { newAddress ->
-            if (destinations.none { it.address == newAddress.address }) {
-                destinations.add(newAddress)
-            }
-        }
-    } else {
-        address?.let { newAddress ->
-            if (destinations.none { it.address == newAddress.address }) {
-                destinations.add(newAddress)
-            }
-        }
-    }
+    val destinations =
+        remember { mutableStateListOf("لوکیشن فعلی", address?.address ?: "مقصد اولیه ") }
 
     Column(
         modifier = Modifier
@@ -101,32 +68,17 @@ fun DynamicTopSheet(
                     .clickable { onDismiss() }
             )
             Icon(
-                Icons.Filled.MoreVert,
-                contentDescription = "more icon",
+                Icons.Filled.Add,
+                contentDescription = "add icon",
                 modifier = Modifier
                     .padding(end = 12.dp)
                     .width(24.dp)
                     .height(24.dp)
-                    .clickable { expanded = !expanded }
-            )
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier.clip(RoundedCornerShape(8.dp))
-            ) {
-                DropdownMenuItem(
-                    modifier = Modifier.background(color = MaterialTheme.colorScheme.background),
-                    onClick = {
+                    .clickable {
+                        destinations.add("آدرس جدید")
                         isAddingDestination = true
-                        onMultiDestinationRouting() 
-                    },
-                    text = {
-                        Text(
-                            text = "افزودن مقصد",
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    })
-            }
+                    }
+            )
         }
 
         LazyColumn(
@@ -134,10 +86,10 @@ fun DynamicTopSheet(
                 .fillMaxWidth()
         ) {
             items(destinations.size) { index ->
-                val icon: Int = if (index == 0) {
-                    R.drawable.ic_circle_dot
-                } else {
-                    R.drawable.ic_marker_bold
+                val icon: Int = when (index) {
+                    0 -> R.drawable.ic_circle_dot
+                    1 -> R.drawable.ic_marker_bold
+                    else -> R.drawable.ic_marker_bold
                 }
                 DestinationItem(
                     address = destinations[index],
@@ -145,7 +97,6 @@ fun DynamicTopSheet(
                 )
             }
         }
-
         ToggleButtons(
             carDistanceDetails = carDistanceDetails,
             motorcycleDistanceDetails = motorcycleDistanceDetails
