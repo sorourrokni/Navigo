@@ -229,6 +229,7 @@ fun SearchScreen(
                     onClick = { latLng ->
                         selectedLocation = latLng
                         selectedLocation?.let {
+                            navController.popBackStack()
                             navController.navigate("main/${it.latitude}/${it.longitude}")
                         }
                     },

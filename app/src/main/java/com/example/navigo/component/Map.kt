@@ -71,10 +71,9 @@ fun Map(
         }
     }
     LaunchedEffect(multiDestinationMode) {
-        if (multiDestinationMode) {
-            isMultiDestination = true
-        }
+        isMultiDestination = multiDestinationMode
     }
+
     if (isLocationRetrieved) {
         Box {
             AndroidView(
@@ -127,8 +126,8 @@ fun Map(
                                 polyline?.let { map.removePolyline(it) }
 
                                 val lineStyleBuilder = LineStyleBuilder()
-                                lineStyleBuilder.color = Color(124, 185, 255, 255)
-                                lineStyleBuilder.width = 5f
+                                lineStyleBuilder.color = Color(76, 134, 244, 255)
+                                lineStyleBuilder.width = 8f
 
                                 polyline =
                                     Polyline(
