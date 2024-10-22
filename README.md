@@ -90,3 +90,6 @@ To run this project, follow these steps:
 
    ```bash
    git clone https://github.com/yourusername/routing-map-app.git
+   
+2. Open the project in Android Studio.
+3. Build the project and run it on an emulator or Android device.
